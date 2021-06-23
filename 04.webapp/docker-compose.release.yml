@@ -1,0 +1,18 @@
+# リリース用
+
+version: "3"
+
+services:
+    app:
+        image: go_webapp_image_release
+        container_name: go_webapp_container_release
+        build:
+            context: ./webapp
+            dockerfile: Dockerfile.release
+        ports:
+            - 80:80
+        tty: true
+        cap_add:
+            - SYS_PTRACE
+        security_opt:
+            - apparmor:unconfined

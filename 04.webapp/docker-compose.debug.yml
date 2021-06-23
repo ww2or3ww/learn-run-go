@@ -1,0 +1,23 @@
+# デバッグ用
+# air(https://github.com/cosmtrek/air) を利用。
+
+version: "3"
+
+services:
+    app:
+        image: go_webapp_image_debug
+        container_name: go_webapp_container_debug
+        build:
+            context: ./webapp
+            dockerfile: Dockerfile.debug
+        ports:
+            - 80:80
+        volumes:
+            - ./webapp:/work/webapp
+        command: air
+        tty: true
+        stdin_open: true
+        cap_add:
+            - SYS_PTRACE
+        security_opt:
+            - apparmor:unconfined
