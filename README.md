@@ -182,6 +182,15 @@ $ docker-compose -f docker-compose.release.yml up --build
 ```
 
 ### デプロイ
+#### AWS Copilotのインストール(Cloud9)
+```
+$ curl -Lo /usr/local/bin/copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux && chmod +x /usr/local/bin/copilot
+$ copilot --version
+copilot version: v1.8.1
+```
+各種環境へのインストールについては以下を参照。  
+https://aws.github.io/copilot-cli/ja/docs/getting-started/install/
+
 #### App Runner 
 ```
 $ copilot init
