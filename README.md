@@ -181,14 +181,29 @@ $ docker-compose -f docker-compose.debug.yml up --build
 $ docker-compose -f docker-compose.release.yml up --build
 ```
 
-### デプロイ
-#### AWS Copilotのインストール(Cloud9)
+### App Runnerによるデプロイ
+#### Cloud9の場合の環境設定
+
+Preferences > AWS SETTINGS > AWS managed temporary credentials : OFF
+
+AWSプロファイル設定
 ```
+
+$ aws configure
+AWS Access Key ID [None]: XXXXXXXXXXXXXXXXXXXX
+AWS Secret Access Key [None]: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Default region name [None]: ap-northeast-1
+Default output format [None]: 
+```
+
+AWS Copilot CLI のインストール
+```
+$ sudo su -
 $ curl -Lo /usr/local/bin/copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux && chmod +x /usr/local/bin/copilot
 $ copilot --version
 copilot version: v1.8.1
 ```
-各種環境へのインストールについては以下を参照。  
+Cloud9以外の各種環境へのインストールについては以下を参照。  
 https://aws.github.io/copilot-cli/ja/docs/getting-started/install/
 
 #### App Runner 
