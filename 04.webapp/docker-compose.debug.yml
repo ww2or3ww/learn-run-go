@@ -11,10 +11,9 @@ services:
             context: ./webapp
             dockerfile: Dockerfile.debug
         ports:
-            - 80:80
+            - 8080:80
         volumes:
             - ./webapp:/work/webapp
-        command: air
         tty: true
         stdin_open: true
         cap_add:

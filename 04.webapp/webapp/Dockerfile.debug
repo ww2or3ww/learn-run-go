@@ -5,9 +5,7 @@ FROM golang:1.16.5-alpine
 
 RUN apk update \
   && apk add --no-cache git \
-  && apk add --no-cache gcc libc-dev \
-  && go install github.com/cosmtrek/air@latest \
-  && go get -u golang.org/x/tools/gopls \
-  github.com/ramya-rao-a/go-outline
+  && go install github.com/cosmtrek/air@latest
 
 WORKDIR /work/webapp
+CMD ["air"]

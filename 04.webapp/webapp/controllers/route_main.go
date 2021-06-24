@@ -11,6 +11,6 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func world(w http.ResponseWriter, r *http.Request) {
-	log.Println("show world")
+	log.Println("show world!")
 	generateHTML(w, "!!!", "layout", "public_navbar", "world")
 }

@@ -3,6 +3,7 @@ Goの実行やデプロイについて学習するためのリポジトリ。
 
 ## 環境情報
 ```
+Mac (2021/06/24)
 $ go version
 go version go1.16.5 darwin/amd64
 
@@ -12,6 +13,21 @@ Docker version 20.10.7, build f0df350
 $ docker-compose -v
 docker-compose version 1.29.2, build 5becea4c
 
+```
+
+```
+Cloud9 (2021/06/24)
+$ go version
+go version go1.15.12 linux/amd64
+$ docker -v
+Docker version 20.10.4, build d3cb89e
+$ docker-compose -v
+bash: docker-compose: command not found
+
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
+$ docker-compose -v
+docker-compose version 1.29.0, build 07737305
 ```
 
 ## 01.helloworld
@@ -36,44 +52,45 @@ hello world!
 現在時刻(GMT)を出力するプログラム。  
 ライブラリを利用する。
 
-### ビルド前に、moduleを初期化する
+### ビルド前に、modulesを初期化する
 ```
 $ pwd
 /learn-run-go/02.modules
 
 $ go mod init main
-$ go mod tidy
+go: creating new go.mod: module main
 ```
-`go mod init main` により `go.mod` ファイルが作成される。  
-`go mod tidy` により `go.sum` ファイルが作成される。  
-これらを行わないと、利用しているライブラリの情報不足により、ビルドできない。  
-( 01.helloworldも本当は `go.mod` ファイルを作成しておいた方が良い。 )
+このModules初期化コマンドにより `go.mod` ファイルが作成され、ビルドできるようになる。  
+`init`の後ろの文字列は何でも良いが、公開したりする場合にはモジュールが存在するリポジトリのパスとするのが良いらしい。  
+例 :   
+`$ go mod init github.com/ww2or3ww/learn-run-go/02.modules`
 
-### ビルド & 実行 (バイナリを作成する)
+### ビルド
 ```
-$ go build -o ./bin/main main.go && ./bin/main
+$ go build -o ./bin/main main.go
+go: finding module for package github.com/Songmu/go-httpdate
+go: found github.com/Songmu/go-httpdate in github.com/Songmu/go-httpdate v1.0.0
+```
+ビルド時に依存パッケージがあった場合、それらをインストールしてからビルドすることになる。  
+`go.mod`ファイルは更新され、また、`go.sum`ファイルが新規作成される。
+
+
+### 実行
+```
+$ ./bin/main
 Tue, 22 Jun 2021 09:44:15 GMT
-```
-### ビルド & 実行 (バイナリを作成しない)
-```
-$ go run main.go
-Tue, 22 Jun 2021 09:46:06 GMT
 ```
 
 ## 03.lambda
 クエリパラメータとして受け取ったJSONに、`"hello": "world!"` というKey-Valueを加えて返すLambdaファンクション。
 
-### 関数の作成
-AWSマネジメントコンソール > [AWS Lambda](https://ap-northeast-1.console.aws.amazon.com/lambda/home?region=ap-northeast-1#/functions) から作成する。  
-[関数の作成] > [1から作成] > [関数名:learn-run-go] > [ランタイム:Go 1.x] > [関数の作成]
-
-### 初期セットアップ
+### modulesの初期化
 ```
 $ pwd
 /learn-run-go/03.lambda/func
 
 $ go mod init func
-$ go mod tidy
+go: creating new go.mod: module func
 ```
 
 ### 実行(テスト)
@@ -88,24 +105,32 @@ PASS
 ok      func    0.131s
 ```
 
-### ビルド & パッケージング
+### デプロイ
+
+#### 関数の作成
+AWSマネジメントコンソール > [AWS Lambda](https://ap-northeast-1.console.aws.amazon.com/lambda/home?region=ap-northeast-1#/functions) から作成する。  
+[関数の作成] > [1から作成] > [関数名:learn-run-go] > [ランタイム:Go 1.x] > [関数の作成]
+
+#### ビルド & パッケージング(zip)
 ```
 $ GOOS=linux GOARCH=amd64 go build -o ../bin/hello main.go
 $ (cd ../bin && zip -r ../lambda-package.zip *)
 ```
-(* Goで作成した場合、ハンドラ名がデフォルトで `hello` となっているため、バイナリのファイル名も `hello` としている。)  
+Goで作成した場合、ハンドラ名がデフォルトで `hello` となっているため、バイナリのファイル名も `hello` としている。  
+Lambdaの実行環境に合わせてクロスコンパイルの指定(`GOOS=linux GOARCH=amd64`)をする必要がある。
 
-### デプロイ
+### zipのアップロード
 ```
 $ aws lambda update-function-code --function-name learn-run-go --zip-file fileb://../lambda-package.zip
 ```
 
-### AWS Lambda コンソール(WebUI)のテストに渡すイベント
+### Lambdaのテストイベント
 ```
 {
   "queryStringParameters": {"hey": "yo!"}
 }
 ```
+
 
 ## 04.webapp
 `hello` と `world` のページをもつWebアプリケーション

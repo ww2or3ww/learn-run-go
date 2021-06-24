@@ -10,7 +10,7 @@ services:
             context: ./webapp
             dockerfile: Dockerfile.release
         ports:
-            - 80:80
+            - 8080:80
         tty: true
         cap_add:
             - SYS_PTRACE
