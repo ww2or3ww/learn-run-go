@@ -234,6 +234,15 @@ $ docker-compose -f docker-compose.debug.yml up --build
 $ docker-compose -f docker-compose.release.yml up --build
 ```
 
+#### イメージサイズの確認
+
+```bash
+$ docker images
+REPOSITORY                TAG       IMAGE ID       CREATED          SIZE
+go_webapp_image_debug     latest    aab1c76b6b7f   52 seconds ago   338MB
+go_webapp_image_release   latest    7d8ca74c9b04   16 seconds ago   12.8MB
+```
+
 ### App Runner によるデプロイ
 
 #### App Runner
