@@ -135,7 +135,22 @@ go: found github.com/aws/aws-lambda-go/events in github.com/aws/aws-lambda-go v1
 go: found github.com/aws/aws-lambda-go/lambda in github.com/aws/aws-lambda-go v1.24.0
 ```
 
-### 実行(テスト)
+### ローカルで実行
+
+#### main メソッドから実行する
+
+```bash
+$ pwd
+/learn-run-go/02.lambda/func
+
+$ go build -o ../bin/main main.go && ../bin/main
+=== start main ===
+2021/06/25 06:42:08 expected AWS Lambda environment variables [_LAMBDA_SERVER_PORT AWS_LAMBDA_RUNTIME_API] are not defined
+```
+
+main メソッドから Lambda のエントリーポイントを呼べずに終了している。
+
+#### 単体テストで Lambda のエントリーポイントを直接実行する
 
 ```bash
 $ go test
@@ -163,7 +178,8 @@ $ (cd ../bin && zip -r ../lambda-package.zip *)
 ```
 
 Go で作成した場合、ハンドラ名がデフォルトで `hello` となっているため、バイナリのファイル名も `hello` としている。  
-Lambda の実行環境に合わせてクロスコンパイルの指定(`GOOS=linux GOARCH=amd64`)をする必要がある。
+Lambda の実行環境に合わせてクロスコンパイルの指定(`GOOS=linux GOARCH=amd64`)をしておく。  
+(Cloud9 の場合クロスコンパイルの指定は必要ないが、Lambda にデプロイする際のおまじないと思って付けておく。)
 
 ### zip のアップロード
 
