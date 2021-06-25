@@ -21,6 +21,6 @@
 *.zip
 
 */copilot
-*/bin
+**/bin
 */tmp
 **/tmp
