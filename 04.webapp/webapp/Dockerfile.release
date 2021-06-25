@@ -9,11 +9,12 @@ COPY . .
 
 RUN rm -f go.mod go.sum \
   && go mod init main \
+  && go mod tidy \
   && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /work/bin/main main.go \
   && cp -r ./views/ /work/bin/views/
 
 FROM alpine:latest
-  
+
 COPY --from=builder /work/bin /work/bin
 COPY --from=builder /bin/sh /bin/sh
 

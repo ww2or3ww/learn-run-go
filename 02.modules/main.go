@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/Songmu/go-httpdate"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	strTime := httpdate.Time2Str(time.Now())
-	fmt.Println(strTime)
+	log.SetLevel(log.InfoLevel)
+	log.Info("hello world!")
 }
