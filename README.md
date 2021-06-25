@@ -53,7 +53,7 @@ Default output format [None]:
 
 ## 01.helloworld
 
-### 標準ライブラリのみ
+### a) 標準ライブラリのみ
 
 `hello world!` という文字列を出力するプログラム。
 
@@ -61,7 +61,7 @@ Default output format [None]:
 
 ```bash
 $ pwd
-/learn-run-go/01.helloworld/01.simple
+/learn-run-go/01.helloworld/a.simple
 
 $ go build -o ./bin/main main.go
 ```
@@ -73,7 +73,7 @@ $ ./bin/main
 hello world!
 ```
 
-### 外部ライブラリ利用
+### b) 外部ライブラリ利用
 
 外部のロガーパッケージを利用して `hello world!` を出力するプログラム。
 
@@ -81,7 +81,7 @@ hello world!
 
 ```bash
 $ pwd
-/learn-run-go/01.helloworld/02.modules
+/learn-run-go/01.helloworld/b.modules
 
 $ go mod init main
 go: creating new go.mod: module main
@@ -103,7 +103,7 @@ go: downloading github.com/stretchr/testify v1.2.2
 `init`の後ろの文字列は何でも良いが、公開したりする場合にはモジュールが存在するリポジトリのパスとするのが良いらしい。
 
 > 例 :  
-> `$ go mod init github.com/ww2or3ww/learn-run-go/02.modules`
+> `$ go mod init github.com/ww2or3ww/learn-run-go/b.modules`
 
 外部モジュールを利用しないシンプルなプログラムであっても、これらのコマンドは実行しておいた方が良いと思われる。
 
@@ -114,7 +114,7 @@ $ go build -o ./bin/main main.go && ./bin/main
 INFO[0000] hello world!
 ```
 
-## 03.lambda
+## 02.lambda
 
 クエリパラメータとして受け取った JSON に、`"hello": "world!"` という Key-Value を加えて返す Lambda ファンクション。
 
@@ -122,7 +122,7 @@ INFO[0000] hello world!
 
 ```bash
 $ pwd
-/learn-run-go/03.lambda/func
+/learn-run-go/02.lambda/func
 
 $ go mod init func && go mod tidy
 go: creating new go.mod: module func
@@ -178,7 +178,7 @@ $ aws lambda update-function-code --function-name learn-run-go --zip-file fileb:
 }
 ```
 
-## 04.webapp
+## 03.webapp
 
 `hello` と `world` のページをもつ Web アプリケーション
 
@@ -212,7 +212,7 @@ $ aws lambda update-function-code --function-name learn-run-go --zip-file fileb:
 
 ```bash
 $ pwd
-/learn-run-go/04.webapp/webapp
+/learn-run-go/03.webapp/webapp
 
 $ go build -o ../bin/main main.go && ../bin/main
 ```
@@ -221,7 +221,7 @@ $ go build -o ../bin/main main.go && ../bin/main
 
 ```bash
 $ pwd
-/learn-run-go/04.webapp
+/learn-run-go/03.webapp
 
 $ docker-compose -f docker-compose.debug.yml up --build
 ```
