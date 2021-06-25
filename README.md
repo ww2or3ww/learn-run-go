@@ -19,8 +19,7 @@ Docker version 20.10.4, build d3cb89e
 $ docker-compose -v
 bash: docker-compose: command not found
 
-$ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-$ sudo chmod +x /usr/local/bin/docker-compose
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
 $ docker-compose -v
 docker-compose version 1.29.0, build 07737305
 ```
@@ -29,7 +28,9 @@ docker-compose version 1.29.0, build 07737305
 
 ```bash
 $ sudo su -
-$ curl -Lo /usr/local/bin/copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux && chmod +x /usr/local/bin/copilot
+[root@ ~]# curl -Lo /usr/local/bin/copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux && chmod +x /usr/local/bin/copilot
+[root@ ~]# exit
+
 $ copilot --version
 copilot version: v1.8.1
 ```
@@ -149,7 +150,7 @@ ok      func    0.131s
 
 ### デプロイ
 
-#### 関数の作成
+#### Lambda 関数の作成
 
 AWS マネジメントコンソール > [AWS Lambda](https://ap-northeast-1.console.aws.amazon.com/lambda/home?region=ap-northeast-1#/functions) から作成する。  
 [関数の作成] > [1 から作成] > [関数名:learn-run-go] > [ランタイム:Go 1.x] > [関数の作成]
@@ -212,8 +213,9 @@ $ aws lambda update-function-code --function-name learn-run-go --zip-file fileb:
 
 ```bash
 $ pwd
-/learn-run-go/03.webapp/webapp
+/learn-run-go/03.webapp/main
 
+$ go mod init main && go mod tidy
 $ go build -o ../bin/main main.go && ../bin/main
 ```
 
