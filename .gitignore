@@ -16,8 +16,6 @@
 
 .DS_Store
 
-*.sum
-*.mod
 *.zip
 
 */copilot

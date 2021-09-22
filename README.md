@@ -20,6 +20,7 @@ $ docker-compose -v
 bash: docker-compose: command not found
 
 $ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
 $ docker-compose -v
 docker-compose version 1.29.0, build 07737305
 ```
@@ -36,7 +37,7 @@ copilot version: v1.8.1
 ```
 
 Cloud9 以外の各種環境へのインストールについては以下を参照。  
-https://aws.github.io/copilot-cli/ja/docs/getting-started/install/
+`https://aws.github.io/copilot-cli/ja/docs/getting-started/install/`
 
 ### AWS プロファイル設定
 
@@ -58,21 +59,30 @@ Default output format [None]:
 
 `hello world!` という文字列を出力するプログラム。
 
-#### ビルドして実行可能ファイル(バイナリ)を作成する
+#### ビルドして実行可能ファイル(バイナリ)を作成し、それを実行する。
 
 ```bash
 $ pwd
 /learn-run-go/01.helloworld/a.simple
 
+# ビルドしてバイナリを作成する。
 $ go build -o ./bin/main main.go
-```
 
-#### バイナリを実行する
-
-```bash
+# バイナリを実行する。
 $ ./bin/main
 hello world!
 ```
+
+#### ビルドして実行する(バイナリは出力されない)
+
+```bash
+$ pwd
+/learn-run-go/01.helloworld/a.simple
+
+$ hello world!
+hello world!
+```
+
 
 ### b) 外部ライブラリ利用
 
@@ -83,6 +93,9 @@ hello world!
 ```bash
 $ pwd
 /learn-run-go/01.helloworld/b.modules
+
+# 既に存在する mod, sum ファイルを削除しておく。
+$ rm -f go.mod go.sum
 
 $ go mod init main
 go: creating new go.mod: module main
@@ -101,14 +114,10 @@ go: downloading github.com/stretchr/testify v1.2.2
 `go mod tidy` により `go.sum` ファイルが作成される。  
 これらを行わないと、利用しているライブラリの情報不足により、ビルドできない。
 
-`init`の後ろの文字列は何でも良いが、公開したりする場合にはモジュールが存在するリポジトリのパスとするのが良いらしい。
+これらのファイルはGitなどのバージョン管理システムの管理に含めた方が良い。
+(毎回最新バージョンを利用する場合は含めなくても良い。本項ではあえて含めていない。)
 
-> 例 :  
-> `$ go mod init github.com/ww2or3ww/learn-run-go/b.modules`
-
-外部モジュールを利用しないシンプルなプログラムであっても、これらのコマンドは実行しておいた方が良いと思われる。
-
-#### ビルド & 実行
+#### ビルドして実行可能ファイル(バイナリ)を作成し、それを実行する。(ワンライナー)
 
 ```bash
 $ go build -o ./bin/main main.go && ./bin/main
@@ -117,7 +126,7 @@ INFO[0000] hello world!
 
 ## 02.lambda
 
-クエリパラメータとして受け取った JSON に、`"hello": "world!"` という Key-Value を加えて返す Lambda ファンクション。
+クエリパラメータとして受け取った JSON に `"hello": "world!"` という Key-Value を加えて返す Lambda ファンクション。
 
 ### modules の初期化
 
@@ -173,6 +182,7 @@ AWS マネジメントコンソール > [AWS Lambda](https://ap-northeast-1.cons
 #### ビルド & パッケージング(zip)
 
 ```bash
+command
 $ GOOS=linux GOARCH=amd64 go build -o ../bin/hello main.go
 $ (cd ../bin && zip -r ../lambda-package.zip *)
 ```
@@ -184,6 +194,7 @@ Lambda の実行環境に合わせてクロスコンパイルの指定(`GOOS=lin
 ### zip のアップロード
 
 ```bash
+command
 $ aws lambda update-function-code --function-name learn-run-go --zip-file fileb://../lambda-package.zip
 ```
 
@@ -238,6 +249,7 @@ $ go build -o ../bin/main main.go && ../bin/main
 #### Docker(デバッグ用)
 
 ```bash
+command
 $ pwd
 /learn-run-go/03.webapp
 
@@ -247,12 +259,14 @@ $ docker-compose -f docker-compose.debug.yml up --build
 #### Docker(リリース用)
 
 ```bash
+command
 $ docker-compose -f docker-compose.release.yml up --build
 ```
 
 #### イメージサイズの確認
 
 ```bash
+command
 $ docker images
 REPOSITORY                TAG       IMAGE ID       CREATED          SIZE
 go_webapp_image_debug     latest    aab1c76b6b7f   52 seconds ago   338MB
@@ -264,6 +278,7 @@ go_webapp_image_release   latest    7d8ca74c9b04   16 seconds ago   12.8MB
 #### App Runner
 
 ```bash
+command
 $ copilot init
 ? Application name: appname
 ? Workload type: Request-Driven Web Service
