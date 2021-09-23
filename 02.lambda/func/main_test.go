@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -9,13 +8,7 @@ import (
 )
 
 func TestHandler(t *testing.T) {
-	jsonStr := `
-		{
-			"hey": "yo!"
-		}
-	`
 	var mapJson map[string]string
-	json.Unmarshal([]byte(jsonStr), &mapJson)
 	req := events.APIGatewayProxyRequest{
 		QueryStringParameters: mapJson,
 	}
