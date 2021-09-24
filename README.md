@@ -7,6 +7,7 @@ Go の実行やデプロイについて学習するためのリポジトリ。
 (Cloud9 2021/06/25)
 
 ```bash
+command
 $ go version
 go version go1.15.12 linux/amd64
 $ docker -v
@@ -16,6 +17,7 @@ Docker version 20.10.4, build d3cb89e
 ### docker-compose のインストール
 
 ```bash
+command
 $ docker-compose -v
 bash: docker-compose: command not found
 
@@ -28,6 +30,7 @@ docker-compose version 1.29.0, build 07737305
 ### AWS Copilot CLI のインストール
 
 ```bash
+command
 $ sudo su -
 [root@ ~]# curl -Lo /usr/local/bin/copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux && chmod +x /usr/local/bin/copilot
 [root@ ~]# exit
@@ -46,6 +49,7 @@ Cloud9 以外の各種環境へのインストールについては以下を参�
 Preferences > AWS SETTINGS > AWS managed temporary credentials : OFF
 
 ```bash
+command
 $ aws configure
 AWS Access Key ID [None]: XXXXXXXXXXXXXXXXXXXX
 AWS Secret Access Key [None]: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -62,6 +66,7 @@ Default output format [None]:
 #### ビルドして実行可能ファイル(バイナリ)を作成し、それを実行する。
 
 ```bash
+command
 $ pwd
 /learn-run-go/01.helloworld/a.simple
 
@@ -76,6 +81,7 @@ hello world!
 #### ビルドして実行する(バイナリは出力されない)
 
 ```bash
+command
 $ pwd
 /learn-run-go/01.helloworld/a.simple
 
@@ -91,6 +97,7 @@ hello world!
 #### ビルド前に、modules を初期化する
 
 ```bash
+command
 $ pwd
 /learn-run-go/01.helloworld/b.modules
 
@@ -120,20 +127,23 @@ go: downloading github.com/stretchr/testify v1.2.2
 #### ビルドして実行可能ファイル(バイナリ)を作成し、それを実行する。(ワンライナー)
 
 ```bash
+command
 $ go build -o ./bin/main main.go && ./bin/main
 INFO[0000] hello world!
 ```
 
 ## 02.lambda
 
-クエリパラメータとして受け取った JSON に `"hello": "world!"` という Key-Value を加えて返す Lambda ファンクション。
+{ "hello", "world!" } というJSON を BODY で返す Lambda ファンクション。
 
 ### modules の初期化
 
 ```bash
+command
 $ pwd
 /learn-run-go/02.lambda/func
 
+$ rm -f go.mod go.sum
 $ go mod init func && go mod tidy
 go: creating new go.mod: module func
 go: to add module requirements and sums:
@@ -149,6 +159,7 @@ go: found github.com/aws/aws-lambda-go/lambda in github.com/aws/aws-lambda-go v1
 #### main メソッドから実行する
 
 ```bash
+command
 $ pwd
 /learn-run-go/02.lambda/func
 
@@ -157,29 +168,44 @@ $ go build -o ../bin/main main.go && ../bin/main
 2021/06/25 06:42:08 expected AWS Lambda environment variables [_LAMBDA_SERVER_PORT AWS_LAMBDA_RUNTIME_API] are not defined
 ```
 
-main メソッドから Lambda のエントリーポイントを呼べずに終了している。
+main メソッドから Lambda のエントリーポイントを呼べずに終了する。
 
 #### 単体テストで Lambda のエントリーポイントを直接実行する
 
 ```bash
+command
 $ go test
 query = map[hey:yo!]
 StatusCode=200, Body={
-   "hello": "world!",
-   "hey": "yo!"
+   "hello": "world!"
 }
 PASS
 ok      func    0.131s
 ```
 
-### デプロイ
+#### Dockerコンテナを立ち上げてリクエストする
 
-#### Lambda 関数の作成
+```bash
+# build image & run container
+$ docker build -f Dockerfile.debug -t learn-run-go-debug .
+$ docker run --rm -p 8080:8080 learn-run-go-debug:latest /main
+
+# request for test
+$ curl -XPOST  \
+    "http://localhost:8080/2015-03-31/functions/function/invocations"  \
+    -d '{ }' -o result.json
+
+```
+
+
+### デプロイ (zip)
+
+#### 1. Lambda 関数の作成
 
 AWS マネジメントコンソール > [AWS Lambda](https://ap-northeast-1.console.aws.amazon.com/lambda/home?region=ap-northeast-1#/functions) から作成する。  
-[関数の作成] > [1 から作成] > [関数名:learn-run-go] > [ランタイム:Go 1.x] > [関数の作成]
+[関数の作成] > [1 から作成] > [関数名:learn-run-go-zip] > [ランタイム:Go 1.x] > [関数の作成]
 
-#### ビルド & パッケージング(zip)
+#### 2. ビルド & パッケージング(zip)
 
 ```bash
 command
@@ -191,26 +217,48 @@ Go で作成した場合、ハンドラ名がデフォルトで `hello` とな�
 Lambda の実行環境に合わせてクロスコンパイルの指定(`GOOS=linux GOARCH=amd64`)をしておく。  
 (Cloud9 の場合クロスコンパイルの指定は必要ないが、Lambda にデプロイする際のおまじないと思って付けておく。)
 
-### zip のアップロード
+#### 3. zip のアップロード
 
 ```bash
 command
-$ aws lambda update-function-code --function-name learn-run-go --zip-file fileb://../lambda-package.zip
+$ aws lambda update-function-code \
+  --function-name learn-run-go-zip \
+  --zip-file fileb://../lambda-package.zip
 ```
 
-### Lambda のテストイベント
+### デプロイ (コンテナイメージ)
 
-```json
-{
-  "queryStringParameters": { "hey": "yo!" }
-}
+#### 1. ECR リポジトリの作成
+AWS マネジメントコンソール > Amazon Container Service > [Amazon ECR](https://ap-northeast-1.console.aws.amazon.com/ecr/repositories?region=ap-northeast-1) から作成する。  
+[リポジトリを作成] > [リポジトリ名:learn-run-go-repository] 
+
+
+#### 2. コンテナイメージのビルド & ECRへプッシュ
+```bash
+commands
+$ pwd
+/learn-run-go/02.lambda
+
+$ aws ecr get-login-password --region ap-northeast-1 | \
+    docker login --username AWS --password-stdin \
+    ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
+$ docker build -f Dockerfile.release -t learn-run-go-release .
+$ docker tag learn-run-go-release:latest \
+    ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/learn-run-go-repository:latest
+$ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/learn-run-go-repository:latest
+
 ```
+#### 3. Lambda 関数の作成
+
+AWS マネジメントコンソール > [AWS Lambda](https://ap-northeast-1.console.aws.amazon.com/lambda/home?region=ap-northeast-1#/functions) から作成する。  
+[関数の作成] > [コンテナイメージ] > [関数名:learn-run-go-container] > [コンテナイメージURL]
+
 
 ## 03.webapp
 
 `hello` と `world` のページをもつ Web アプリケーション
 
-```bash
+```text
 03.webapp
 |--docker-compose.debug.yml
 |--docker-compose.release.yml
@@ -239,6 +287,7 @@ $ aws lambda update-function-code --function-name learn-run-go --zip-file fileb:
 #### ローカル
 
 ```bash
+command
 $ pwd
 /learn-run-go/03.webapp/main
 
